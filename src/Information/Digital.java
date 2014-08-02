@@ -1,23 +1,25 @@
 package Information;
 
+import java.io.Serializable;
+
 import Information.Data.Type;
 
-public class Digital extends Data implements Comparable{
+public class Digital extends Data implements Comparable, Serializable{
 	
 	private boolean val;
 	private Type type;
 	
 	/* Create an instance of analog data; 
 	 * type indicates yaw, pitch, roll, throttle */
-	public  Digital(Type type, boolean val){
+	public  Digital(Type type, boolean i){
 		this.type = type;
-		this.val = val;
+		this.val = i;
 	}
 	
 	/* Add this element to the main pipeline */
 	public void add(){
 		try {
-			DataPipe.queue.put(this);
+			DataPipe.outgoing.put(this);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

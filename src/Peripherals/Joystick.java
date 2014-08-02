@@ -1,5 +1,6 @@
 package Peripherals;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,18 +16,29 @@ import net.java.games.input.Component;
 import net.java.games.input.Component.Identifier.Axis;
 import net.java.games.input.Controller;
 import net.java.games.input.Component.Identifier;
+import net.java.games.input.ControllerEnvironment;
 import net.java.games.input.ControllerEvent;
 import net.java.games.input.ControllerListener;
 
-public class Joystick extends Peripheral implements JoystickEventListener{
+public class Joystick implements JoystickEventListener, Runnable{
 	
-	public static void main(String args[]){
-		new Joystick();
-	}
-	
-	public Joystick(){
-		super.searchForControllers(Controller.Type.STICK);
-		EventHandler ev = new EventHandler(super.foundControllers.get(0), this);
+    protected List<Controller> foundControllers = new ArrayList<Controller>();
+    protected EventHandler ev;
+
+	/* Method to be invoked by subclasses, type defined
+	 * by inheriting class. Search through connected peripherals 
+	 * and return the first matching type. */
+	public void searchForControllers(Controller.Type type){
+
+		List<Controller> controllers = Arrays.asList(ControllerEnvironment.getDefaultEnvironment().getControllers());
+
+		for(Controller controller:controllers){
+
+			if (controller.getType() == type){
+				foundControllers.add(controller);
+			}
+		}
+
 	}
 
 	@Override
@@ -140,6 +152,14 @@ public class Joystick extends Peripheral implements JoystickEventListener{
 		// TODO Auto-generated method stub
 		System.out.println(String.format("Base6 %s", state));
 		new Digital(Data.Type.Base6, (state==100)).add();
+	}
+
+	@Override
+	public void run() {
+		searchForControllers(Controller.Type.STICK);
+		if(foundControllers.isEmpty()){ System.out.println("NO JOYSTICK FOUND!!!"); System.exit(0);}
+		ev = new EventHandler(this);
+		ev.pollController(foundControllers.get(0));
 	}
 
 	

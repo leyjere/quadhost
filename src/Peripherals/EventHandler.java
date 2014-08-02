@@ -13,17 +13,17 @@ import Information.Data;
 /* Class which polls the state of the controller and calls the 
  * appropriate callback upon a change occurring. 
  */
-public class EventHandler {
+public class EventHandler{
 	
 	/* Collections of past observed states */
 	private EnumMap<Data.Type, Integer> prevState;
 	private JoystickEventListener js;
+	private Controller controller;
 	
-	public EventHandler(Controller controller, JoystickEventListener event){
+	public EventHandler(JoystickEventListener event){
 		prevState = new EnumMap<Data.Type,Integer>(Data.Type.class);
 		setupMap();
 		js = event;
-		pollController(controller);
 	}
 	
 	/* Method to acquire data from Joystick */
@@ -52,11 +52,11 @@ public class EventHandler {
 					}else if(identifier == Component.Identifier.Axis.RZ && prevState.get(Data.Type.Yaw) != value){
 						js.yaw(value);
 						prevState.put(Data.Type.Yaw, value);
-					}else if(identifier == Component.Identifier.Axis.Z && prevState.get(Data.Type.Throttle) != value){
+					}else if(identifier == Component.Identifier.Axis.SLIDER && prevState.get(Data.Type.Throttle) != Math.abs(value-100)){
 						js.throttle(Math.abs(value-100));
 						prevState.put(Data.Type.Throttle, Math.abs(value-100));
 					}else if(identifier == Component.Identifier.Axis.POV && prevState.get(Data.Type.POV) != value){
-						
+						System.out.println(value);
 					}
 
 				}else{

@@ -1,6 +1,8 @@
 package Information;
 
-public class Analog extends Data implements Comparable{
+import java.io.Serializable;
+
+public class Analog extends Data implements Comparable, Serializable{
 	
 	private int val;
 	private Type type;
@@ -15,12 +17,20 @@ public class Analog extends Data implements Comparable{
 	/* Add this element to the main pipeline */
 	public void add(){
 		try {
-			DataPipe.queue.put(this);
+			DataPipe.outgoing.put(this);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
 
+	public Type getType(){
+		return type;
+	}
+	
+	public int getVal(){
+		return val;
+	}
+	
 	@Override
 	public String toString() {
 		return String.format("Type %s Value %s", type, val);
